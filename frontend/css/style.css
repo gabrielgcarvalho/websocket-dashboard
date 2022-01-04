@@ -1,0 +1,13 @@
+.container {
+    padding-left: 28%;
+    margin: 15%;
+}
+
+#username {
+    width: 192px;
+}
+
+#join {
+    margin-top: 10px;
+    width: 200px;
+}

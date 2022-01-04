@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="css/style.css">
+    <title>AWS Websockets</title>
+</head>
+<body>
+
+    <div class="container" id="container">
+        <div id="login">
+            <input type="text" id="username" placeholder="Username"><br>
+            <button id="join" onclick="connectToWebSocket()">join</button>
+        </div>
+    </div>
+<!-- <input id="webSocketConnection" type="text" size="80" value="WEBSOCKET_ENDPOINT_URL"><br/><br/>
+<input id="messageInput" type="text" size="80" placeholder="Enter message to send"><br/><br/>
+<button id="connectToWebSocketButton" onclick="connectToWebSocket()">Connect</button> <button id="disconnectButton" onclick="disconnect()">Disconnect</button> <button id="sendMessageButton" onclick="sendMessage()">Send</button><br/>
+<p id="socketState"></p>
+
+Socket Messages:
+<p id="messages"></p>    -->
+
+<script>
+    var socket = null;
+    var username = null;
+    function sendMessage(){
+        payload = { "action": "sendmessage", "message": username + ":" + document.getElementById("messageInput").value };
+        socket.send(JSON.stringify(payload));
+    }
+
+    function connectToWebSocket(){
+        var wsconnect = "wss://g5bodiax6h.execute-api.us-east-2.amazonaws.com/Prod";
+        socket = new WebSocket(wsconnect);
+        username = document.getElementById("username").value;
+        console.log("connecting...");
+        socket.onopen = function(event) {
+            console.log(username);
+            document.getElementById("login").innerHTML = "<h1>Welcome</h1>";
+            payload = { "action": "sendmessage", "message": username + " connected to chat"};
+            document.getElementById("container").innerHTML += "<div id='messages'> </div><div id='send'><input type='text' id='messageInput' placeholder='Message'><button id='sendMessageButton' onclick='sendMessage()''>Send</button><button id='sendMessageButton' onclick='disconnect()''>Exit</button></div>";
+            socket.send(JSON.stringify(payload));
+        };
+
+        socket.onmessage = function(event) {
+            document.getElementById("messages").innerHTML += event.data + '<br/>'
+        };
+
+        socket.onerror = function(event) {
+            console.error("WebSocket error observed:", event);
+            document.getElementById("socketState").innerHTML = 'Connection Error';
+        };
+    }
+
+    function disconnect(){
+        payload = { "action": "sendmessage", "message": username + " disconnect"};
+        socket.send(JSON.stringify(payload));
+        sleep(100)
+        socket.close();
+    }
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+</script>
+
+</html>
